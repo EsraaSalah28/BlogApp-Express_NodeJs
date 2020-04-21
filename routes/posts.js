@@ -43,6 +43,7 @@ router.get('/:id', (req, res) => {
 
 })
 router.post('/', (req, res) => {
+const {title,body,author}=req.body
 const PostInstance= new PostModel({
     title,
     body,
