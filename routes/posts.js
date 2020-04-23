@@ -10,39 +10,36 @@ router.use((req, res, next) => {
 
 })
 
-router.get('/', (req, res) => {
+router.get('/',async (req, res,next) => {
+    try{
 
-    PostModel.find({},(err,posts)=>{
+    constposts=await PostModel.find({}).populate('author')
 
-        if(!err){
-            return res.json(posts)
-        }
-        next(err)
-
-    })
+       
+    }   
+    catch(err){
+    next(err)
+    }
+  
 
     // res.send('list posts')
 
 })
-router.get('/:id', (req, res) => {
-    const routeParams = req.params
-    const {
-        id
-    } = routeParams
-    PostModel.findById(id,(err,post)=>{
-        if (!err) {
-         return   res.json(post)
+router.get('/:id', async (req, res,next) => {
+ try{
+ const post = await PostModel.findById(req.params.id)
+ return res.json(post)
 
-        }
-
+ }
+ catch(err){
         next(err)
+ }
 
-    })
 
     // res.send(`listing  posts with id=${id}`)
 
 })
-router.post('/', (req, res) => {
+router.post('/', async(req, res,next) => {
 const {title,body,author}=req.body
 const PostInstance= new PostModel({
     title,
@@ -54,37 +51,42 @@ const PostInstance= new PostModel({
 })
 
 
+ try{
+  const post = await PostInstance.save()
+     return res.json(post)
+    
+}
+catch(err)
+{ next(err)}
 
-PostInstance.save((err,post)=>{
-    if(!err) return res.json(post)
-       next(err)
 })
+router.patch('/:id', async (req, res,next) => {
 
-})
-router.patch('/:id', (req, res) => {
-
-    PostModel.findByIdAndUpdate(req.params.id,{$set:req.body},(err,post)=>{
-        if (!err) {
+    try{  const post= await PostModel.findByIdAndUpdate(req.params.id,{$set:req.body})
+        
             return   res.json(post)
     
-           }
-    
-           next(err)
-        
+           
+        }
+        catch(err)
+        {
+            next(err)
+        }
     
       })
 
-})
-router.delete('/:id', (req, res) => {
-    PostModel.findByIdAndDelete(req.params.id,(err,post)=>{
-        if (!err) {
+
+router.delete('/:id',async (req, res) => {
+    try{
+     const post = await PostModel.findByIdAndDelete(req.params.id)
+    
             return   res.json(post)
     
-           }
-    
+       }   
+  catch(err){    
            next(err)
+  }
 
-    })
 
 })
 

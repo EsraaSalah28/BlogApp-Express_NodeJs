@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-// const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
   FirstName: {
@@ -51,15 +51,15 @@ userSchema.statics.getUsersByGender = function getUsersByGender(gender) {
   }, cb)
 
 }
-// userSchema.pre('save', function (doc, next) {
-//   if (doc.isNew){
-//     bcrypt.hash(doc.password, (err, hashedPassword) => {
-//       doc.password = hashedPassword
-//       next()
+userSchema.pre('save', function (doc, next) {
+  if (doc.isNew){
+    bcrypt.hash(doc.password, (err, hashedPassword) => {
+      doc.password = hashedPassword
+      next()
 
-//     })
-//   }
-// })
+    })
+  }
+})
 
 const userModel = mongoose.model('User', userSchema)
 module.exports = userModel
